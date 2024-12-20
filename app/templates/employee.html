@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 20px;
+        }
+        .info-card {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-3 d-flex justify-content-end">
+        <button class="btn btn-danger" onclick="logout()">Logout</button>
+    </div>
+    <div class="container mt-5">
+        <div class="text-center">
+            <!-- Placeholder Avatar -->
+            <img src="/static/employee.png" alt="Employee Avatar" class="avatar">
+            <h1 class="mt-3" id="employee-name">John Doe</h1>
+        </div>
+
+        <div class="card info-card shadow-sm mt-4">
+            <div class="card-body">
+                <h4 class="card-title">Employee Details</h4>
+                <p class="card-text"><strong>Project:</strong> <span id="employee-project">Website Redesign</span></p>
+                <p class="card-text"><strong>Position:</strong> <span id="employee-role">Frontend Developer</span></p>
+                <p class="card-text"><strong>Salary:</strong> $<span id="employee-salary">5,000</span> per month</p>
+                <p class="card-text"><strong>Contact Email:</strong> <span id="employee-email">johndoe@example.com</span></p>
+                <!-- <p class="card-text"><strong>Phone Number:</strong> <span id="employee-phone">+1234567890</span></p> -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Example of how you might fetch and populate employee data dynamically
+        async function fetchEmployeeData() {
+            try {
+                const response = await fetch('/employee-info/', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include' // Включает куки
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch employee data: ${response.status}`);
+                }
+
+                const employeeData = await response.json();
+                var result = "";
+                employeeData.projects.forEach(element => {
+                        if(element == null){ 
+                            return;
+                        }
+                        result += element + '<br>';
+                    });
+                if(result.length == 0) {
+                    result =  "<br>No project assigned";
+                }
+                var role = "No role";
+                if(employeeData.role == "user") {
+                    role = "employee";
+                }
+                document.getElementById('employee-name').textContent = employeeData.name;
+                document.getElementById('employee-project').innerHTML = result || "No project assigned";
+                document.getElementById('employee-role').textContent = role;
+                document.getElementById('employee-salary').textContent = employeeData.salary || "Not specified";
+                document.getElementById('employee-email').textContent = employeeData.email;
+                // document.getElementById('employee-phone').textContent = employeeData.phone;
+            } catch (error) {
+                console.error('Error fetching employee data:', error);
+                document.getElementById('employee-data-error').textContent = 'Failed to load employee data. Please try again later.';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchEmployeeData);
+
+
+        // Call the function to populate data
+        fetchEmployeeData();
+
+        function setCookie(name, value, days) {
+            let expires = "";
+            if (days) {
+                const date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+        function logout() {
+            setCookie("token", "", 1);
+            window.location.replace("/login");
+        }
+    </script>
+</body>
+</html>

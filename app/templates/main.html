@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <!-- Logout Button -->
+        <div class="container mt-3 d-flex justify-content-end">
+            <button class="btn btn-danger" onclick="logout()">Logout</button>
+        </div>
+        <div class="container mt-3 d-flex justify-content-end">
+            <button class="btn btn-success" onclick="go_to_logs()">Audit</button>
+        </div>
+        <h1 class="text-center">Admin Dashboard</h1>
+
+        <!-- Employees Section -->
+        <section id="employees-section" class="mt-4">
+            <h2>Employees</h2>
+            <button class="btn btn-success mb-3" onclick="openCreateEmployeeModal()">Add Employee</button>
+            <button class="btn btn-primary mb-3" onclick="fetchEmployees()">Load Employees</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="employees-table-body">
+                    <!-- Dynamic Content -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Projects Section -->
+        <section id="projects-section" class="mt-4">
+            <h2>Projects</h2>
+            <button class="btn btn-success mb-3" onclick="openCreateProjectModal()">Add Project</button>
+            <button class="btn btn-primary mb-3" onclick="fetchProjects()">Load Projects</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Start date</th>
+                        <th>End date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="projects-table-body">
+                    <!-- Dynamic Content -->
+                </tbody>
+            </table>
+        </section>
+
+                <!-- Assignments Section -->
+        <section id="assignments-section" class="mt-4">
+            <h2>Assignments</h2>
+            <button class="btn btn-success mb-3" onclick="openCreateAssignmentModal()">Add Assignment</button>
+            <button class="btn btn-primary mb-3" onclick="fetchAssignments()">Load Assignments</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee ID</th>
+                        <th>Project ID</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="assignments-table-body">
+                    <!-- Dynamic Content -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Salaries Section -->
+        <section id="salaries-section" class="mt-4">
+            <h2>Salaries</h2>
+            <button class="btn btn-success mb-3" onclick="openCreateSalaryModal()">Add Salary</button>
+            <button class="btn btn-primary mb-3" onclick="fetchSalaries()">Load Salaries</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Employee ID</th>
+                        <th>Amount</th>
+                        <th>Effective Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="salaries-table-body">
+                    <!-- Dynamic Content -->
+                </tbody>
+            </table>
+        </section>
+
+        <section id="users-section" class="mt-4">
+            <h2>Users</h2>
+            <button class="btn btn-success mb-3" onclick="openCreateUserModal()">Add User</button>
+            <button class="btn btn-primary mb-3" onclick="fetchUsers()">Load Users</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Employee ID</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body">
+                    <!-- Dynamic Content -->
+                </tbody>
+            </table>
+        </section>
+
+        <!-- Modals -->
+        <div class="modal fade" id="employeeModal" tabindex="-1" aria-labelledby="employeeModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="employeeModalLabel">Add/Edit Employee</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="employee-form">
+                            <div class="mb-3">
+                                <label for="employee-first-name" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="employee-first-name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="employee-last-name" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="employee-last-name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="employee-email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="employee-email" required>
+                            </div>
+                            <input type="hidden" id="employee-id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveEmployee()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="projectModalLabel">Add/Edit Project</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="project-form">
+                            <div class="mb-3">
+                                <label for="project-name" class="form-label">Project Name</label>
+                                <input type="text" class="form-control" id="project-name" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="project-description" class="form-label">Description</label>
+                                <textarea class="form-control" id="project-description" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="project-name" class="form-label">Start date</label>
+                                <input type="date" class="form-control" id="start_date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="project-name" class="form-label">End date</label>
+                                <input type="date" class="form-control" id="end_date" required>
+                            </div>
+                            <input type="hidden" id="project-id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveProject()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div class="modal fade" id="assignmentModal" tabindex="-1" aria-labelledby="assignmentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="assignmentModalLabel">Add/Edit Assignment</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="assignment-form">
+                            <div class="mb-3">
+                                <label for="assignment-employee-id" class="form-label">Employee ID</label>
+                                <input type="number" class="form-control" id="assignment-employee-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assignment-project-id" class="form-label">Project ID</label>
+                                <input type="number" class="form-control" id="assignment-project-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assignment-start-date" class="form-label">Start Date</label>
+                                <input type="date" class="form-control" id="assignment-start-date" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="assignment-end-date" class="form-label">End Date</label>
+                                <input type="date" class="form-control" id="assignment-end-date">
+                            </div>
+                            <input type="hidden" id="assignment-id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveAssignment()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="salaryModal" tabindex="-1" aria-labelledby="salaryModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="salaryModalLabel">Add/Edit Salary</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="salary-form">
+                            <div class="mb-3">
+                                <label for="salary-employee-id" class="form-label">Employee ID</label>
+                                <input type="number" class="form-control" id="salary-employee-id" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="salary-amount" class="form-label">Amount</label>
+                                <input type="number" step="0.01" class="form-control" id="salary-amount" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="salary-effective-date" class="form-label">Effective Date</label>
+                                <input type="date" class="form-control" id="salary-effective-date" required>
+                            </div>
+                            <input type="hidden" id="salary-id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveSalary()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modals -->
+        <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="userModalLabel">Add/Edit User</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="user-form">
+                            <div class="mb-3">
+                                <label for="user-username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="user-username" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="user-password" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="user-password" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="user-role" class="form-label">Role</label>
+                                <select class="form-control" id="user-role" required>
+                                    <option value="admin">Admin</option>
+                                    <!-- <option value="manager">Manager</option> -->
+                                    <option value="employee">Employee</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="user-employee-id" class="form-label">Employee ID</label>
+                                <input type="number" class="form-control" id="user-employee-id">
+                            </div>
+                            <input type="hidden" id="user-id">
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="saveUser()">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
